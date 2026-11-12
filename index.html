@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matek gyakorlóoldalak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#f2f6fc;--grid:#dbe5f3;--ink:#1d2433;--muted:#5d6678;--line:#d5deec;--acc:#1e40af;--bar:#1e293b}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:Nunito,system-ui,sans-serif;color:var(--ink);background:var(--paper);
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:24px 24px}
+  a{color:inherit}
+
+  /* ---------- főoldal ---------- */
+  #home{max-width:1040px;margin:0 auto;padding:34px 16px 50px}
+  .hero{text-align:center;margin-bottom:28px}
+  .hero h1{margin:0;font-size:2.3rem;font-weight:800;letter-spacing:.2px}
+  .hero p{margin:6px 0 0;color:var(--muted);font-size:1.08rem}
+  .group{margin:26px 0 8px}
+  .group h2{font-size:1.15rem;font-weight:800;margin:0 0 12px;display:flex;align-items:center;gap:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+  .group h2::after{content:"";flex:1;height:2px;background:var(--line);border-radius:2px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+  .card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 16px 14px;text-decoration:none;
+    box-shadow:0 3px 12px rgba(30,41,59,.06);transition:transform .12s,box-shadow .12s,border-color .12s;border-top:5px solid var(--c)}
+  .card:hover,.card:focus-visible{transform:translateY(-3px);box-shadow:0 8px 22px rgba(30,41,59,.12);border-color:var(--c);outline:none}
+  .card .ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:1.25rem;font-weight:800;background:var(--cl);color:var(--c);margin-bottom:10px;font-family:Georgia,serif}
+  .card h3{margin:0 0 4px;font-size:1.15rem;font-weight:800}
+  .card p{margin:0;color:var(--muted);font-size:.94rem;flex:1}
+  .card .go{margin-top:12px;font-weight:800;color:var(--c);font-size:.95rem}
+  @media (max-width:600px){.hero h1{font-size:1.8rem}}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:34px}
+
+  /* ---------- nézet (menüsor + gyakorló) ---------- */
+  #view{display:none;height:100%;flex-direction:column}
+  body.viewing #home{display:none}
+  body.viewing #view{display:flex}
+  .bar{display:flex;align-items:center;gap:6px;background:var(--bar);color:#fff;padding:6px 10px;flex:0 0 auto;position:relative;z-index:2}
+  .bar a.home{display:flex;align-items:center;gap:6px;text-decoration:none;font-weight:800;padding:7px 10px;border-radius:9px;white-space:nowrap}
+  .bar a.home:hover{background:rgba(255,255,255,.12)}
+  .nav{display:flex;gap:4px;overflow-x:auto;flex:1;scrollbar-width:thin}
+  .nav a{text-decoration:none;white-space:nowrap;padding:7px 9px;border-radius:9px;font-weight:700;font-size:.9rem;color:#cbd5e1;border-bottom:3px solid transparent}
+  .nav a:hover{background:rgba(255,255,255,.1);color:#fff}
+  .nav a.on{color:#fff;background:rgba(255,255,255,.14);border-bottom-color:var(--c)}
+  .bar .ext{white-space:nowrap;text-decoration:none;font-size:1.1rem;font-weight:800;color:#cbd5e1;padding:7px 9px;border-radius:9px}
+  .bar .ext:hover{background:rgba(255,255,255,.1);color:#fff}
+  .menuBtn{display:none;border:0;background:rgba(255,255,255,.12);color:#fff;font:inherit;font-weight:800;padding:8px 12px;border-radius:9px;cursor:pointer;margin-left:auto}
+  #frame{flex:1;width:100%;border:0;background:#fff}
+  .drop{display:none}
+  @media (max-width:1000px){
+      .nav,.bar .ext{display:none}
+    .menuBtn{display:block}
+    .drop{position:absolute;top:100%;left:0;right:0;background:var(--bar);padding:6px 10px 12px;box-shadow:0 10px 20px rgba(0,0,0,.25)}
+    .drop.open{display:block}
+    .drop a{display:block;text-decoration:none;color:#e2e8f0;font-weight:700;padding:10px 12px;border-radius:9px;border-left:4px solid var(--c);margin-top:4px}
+    .drop a.on{background:rgba(255,255,255,.14);color:#fff}
+    .drop a.ext2{border-left-color:transparent;color:#94a3b8;font-size:.9rem}
+  }
+</style>
+</head>
+<body>
+
+<div id="home">
+  <div class="hero">
+    <h1>Matek gyakorlóoldalak</h1>
+    <p>Válassz egy témát, és kezdd el a gyakorlást! Minden feladat véletlenszerűen generált.</p>
+  </div>
+  <div id="groups"></div>
+  <footer>A gyakorlóoldalak forrása a GitHubon: <a href="https://github.com/LisTib">github.com/LisTib</a></footer>
+</div>
+
+<div id="view">
+  <div class="bar">
+    <a class="home" href="#">🏠 <span>Gyakorlók</span></a>
+    <nav class="nav" id="nav"></nav>
+    <a class="ext" id="ext" href="#" target="_blank" rel="noopener" title="Megnyitás új lapon">↗</a>
+    <button class="menuBtn" id="menuBtn" aria-expanded="false">☰ <span id="curName"></span></button>
+    <div class="drop" id="drop"></div>
+  </div>
+  <iframe id="frame" title="Gyakorlóoldal"></iframe>
+</div>
+
+<script>
+/* ===== Új gyakorló felvétele: egy új sor a megfelelő csoportba. =====
+   id   = a GitHub-repó neve (az oldal címe: listib.github.io/<id>/)            */
+const GROUPS = [
+  { name: 'Algebra', items: [
+    { id: 'hatvanygyakorlo',     title: 'Hatványgyakorló',     ic: 'aⁿ',  c: '#2563eb', desc: 'A hatványozás azonosságai: szorzás, osztás, hatvány hatványa, negatív kitevő.' },
+    { id: 'normalalakgyakorlo',  title: 'Normálalak',          ic: '10ᵏ', c: '#0891b2', desc: 'Átírás normálalakba, műveletek normálalakú számokkal lépésről lépésre.' },
+    { id: 'egyenletgyakorlo',    title: 'Egyenletgyakorló',    ic: 'x=',  c: '#4f46e5', desc: 'Elsőfokú egyismeretlenes egyenletek megoldása a mérlegelvvel.' },
+    { id: 'intervallumgyakorlo', title: 'Intervallumok',       ic: '[ )', c: '#7c3aed', desc: 'Zárt és nyílt intervallumok, ábrázolás számegyenesen, relációs jelek.' }
+  ]},
+  { name: 'Százalékszámítás', items: [
+    { id: 'szazalekgyakorlo',    title: 'Százalékgyakorló',    ic: '%',   c: '#16a34a', desc: 'Életszerű szöveges feladatok: százalékalap, -érték és -láb.' },
+    { id: 'szazalekaranypar',    title: 'Százalék aránypárral', ic: 'A:É', c: '#9f1239', desc: 'Százalékszámítás egyetlen módszerrel: aránypárral.' }
+  ]},
+  { name: 'Geometria – trigonometria', items: [
+    { id: 'trigmaggyakorlo',     title: 'Háromszöggyakorló',   ic: '△',   c: '#d97706', desc: 'A szinusztétel és a koszinusztétel alkalmazása háromszögekben.' }
+  ]}
+];
+
+const ALL = GROUPS.flatMap(g => g.items);
+const $ = id => document.getElementById(id);
+const light = hex => hex + '1f';
+const urlOf = it => '/' + it.id + '/';
+
+// főoldal kártyái
+$('groups').innerHTML = GROUPS.map(g => `
+  <section class="group"><h2>${g.name}</h2><div class="cards">
+    ${g.items.map(it => `
+      <a class="card" href="#${it.id}" style="--c:${it.c};--cl:${light(it.c)}">
+        <div class="ic">${it.ic}</div>
+        <h3>${it.title}</h3>
+        <p>${it.desc}</p>
+        <span class="go">Gyakorlás →</span>
+      </a>`).join('')}
+  </div></section>`).join('');
+
+// menüsor
+$('nav').innerHTML = ALL.map(it => `<a href="#${it.id}" data-id="${it.id}" style="--c:${it.c}">${it.title}</a>`).join('');
+$('drop').innerHTML = ALL.map(it => `<a href="#${it.id}" data-id="${it.id}" style="--c:${it.c}">${it.title}</a>`).join('')
+  + '<a class="ext2" id="ext2" href="#" target="_blank" rel="noopener">Megnyitás új lapon ↗</a>';
+
+function closeDrop(){ $('drop').classList.remove('open'); $('menuBtn').setAttribute('aria-expanded','false'); }
+$('menuBtn').onclick = () => { const o = $('drop').classList.toggle('open'); $('menuBtn').setAttribute('aria-expanded', o); };
+$('drop').addEventListener('click', closeDrop);
+
+function route(){
+  const id = decodeURIComponent(location.hash.slice(1));
+  const it = ALL.find(x => x.id === id);
+  closeDrop();
+  if (!it) {
+    document.body.classList.remove('viewing');
+    document.title = 'Matek gyakorlóoldalak';
+    $('frame').removeAttribute('src');
+    return;
+  }
+  document.body.classList.add('viewing');
+  document.title = it.title + ' – Matek gyakorlóoldalak';
+  if ($('frame').getAttribute('src') !== urlOf(it)) $('frame').src = urlOf(it);
+  $('ext').href = $('ext2').href = urlOf(it);
+  $('curName').textContent = it.title;
+  document.querySelectorAll('#nav a, #drop a[data-id]').forEach(a => a.classList.toggle('on', a.dataset.id === id));
+  const cur = document.querySelector('#nav a.on'); if (cur) cur.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+}
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
